@@ -1,0 +1,28 @@
+# Secrets and Environment Variables
+.env
+.env.backup
+env.ini
+*.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Streamlit
+.streamlit/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# OS
+Thumbs.db
+Desktop.ini
