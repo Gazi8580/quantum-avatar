@@ -13,7 +13,7 @@ def load_api_keys():
                         key, value = line.split('=', 1)  
                         key = key.strip()  
                         value = value.strip()  
-                        if key in ['PAYPAL_CLIENT_ID', 'PAYPAL_CLIENT_SECRET', 'CLAUDE_API_KEY', 'GROK_API_KEY', 'BLACKBOX_API_KEY', 'AMAZON_Q_API_KEY']:  
+'PAYPAL_CLIENT_SECRET', 'CLAUDE_API_KEY', 'GROK_API_KEY', 'BLACKBOX_API_KEY', 'AMAZON_Q_API_KEY']:  
                             api_keys[key] = value  
         except:  
             pass  
