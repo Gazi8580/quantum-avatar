@@ -232,8 +232,9 @@ def main():
             st.success(f"✅ {real_keys} KEYS ACTIVE")
             
         st.markdown("### Settings")
-        environment = st.radio("PayPal Environment", ["Live", "Sandbox"])
-        base_url = "https://api-m.paypal.com" if environment == "Live" else "https://api-m.sandbox.paypal.com"
+        # Locked to Live Mode as requested
+        st.success("🌍 ENVIRONMENT: LIVE (Production)")
+        base_url = "https://api-m.paypal.com"
             
         if st.button("🔴 STOP SYSTEM"):
             st.session_state.active = False
