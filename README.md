@@ -1,51 +1,29 @@
-# Quantum Avatar — Streamlit Dashboard
+# 🤖 MEGA-ULTRA-ROBOTER-KI
+## 🚀 PayPal Revenue Maximization System
 
-Kurz: Lokales Streamlit‑Dashboard für das Quantum Avatar Projekt mit Desktop‑Launcher und Anweisungen für sicheres Deployment.
+**STATUS: LIVE (PRODUCTION)** 🟢
 
-## Übersicht
-Dieses Repo enthält das Streamlit‑Dashboard (new_dashboard.py) und Hilfs‑Skripts für lokales Starten und Deployment. Sensible Keys wurden aus dem Repo entfernt — trage sie als Secrets ein.
+This system is a fully autonomous revenue maximization bot connected to the PayPal Live API. It monitors transactions in real-time and uses AI (Claude/Grok/Local Core) to analyze sales and suggest upsells.
 
-## Schnellstart (lokal)
-1. Abhängigkeiten installieren:
-```bash
-pip install --user -r requirements.txt
-```
-2. App starten:
-```bash
-python -m streamlit run new_dashboard.py --server.port 8501 --server.address 127.0.0.1
-```
-3. Öffnen: http://localhost:8501
+### ✅ Features
+- **Real-Time Monitoring:** Checks PayPal for new transactions every 10 seconds.
+- **AI Analysis:** Uses Claude 3 Opus or Grok Beta to analyze buyer behavior.
+- **Local Core Fallback:** Continues to work even if AI credits run out.
+- **Secure:** API keys are stored locally in `env.ini` and never uploaded to Git.
 
-Desktop‑Launcher:
-- Datei: %USERPROFILE%\Desktop\KLICK_MICH_ZUR_INSTALLATION.bat
-- Startet Streamlit via `python -m streamlit run` und fällt bei Fehlern auf CLI‑Fallback (CORE_LOGIC.py) zurück.
+### 🛠️ How to Start
+1. Double-click **`START_ROBOTER.bat`** on your Desktop.
+2. Keep the black window open.
+3. The Dashboard will open automatically in your browser (`http://localhost:8502`).
 
-## Deployment (Streamlit Community Cloud)
-- Repository verbinden → Branch `main` auswählen.
-- Hauptdatei: `new_dashboard.py`
-- In Settings → Secrets: alle API‑Keys als Umgebungsvariablen hinzufügen (z. B. CLAUDE_API_KEY, GROK_API_KEY, OPENROUTER_API_KEY, BLACKBOX_API_KEY, AMAZON_Q_API_KEY).
-- Deploy starten und Logs prüfen.
+### 🔑 Configuration
+- **PayPal Keys:** Managed in `env.ini` (Live Mode).
+- **AI Keys:** Managed in `env.ini` (Claude/Grok).
 
-## Sicherheit / Geheimnisse
-WICHTIG:
-- Revoke/Renew sofort alle geleakten Keys, die in alten Dateien auftauchten (env.ini, .env, paypal_maximizer.py).
-- Niemals API‑Keys ins Repo committen.
-- Verwende git‑filter‑repo um Historie zu bereinigen (bereinigter Clone: https://github.com/Gazi8580/quantum-avatar-cleaned).
-- Trage neue Keys nur in Secrets (Streamlit Cloud / GitHub Actions / CI) oder OS‑Environment ein.
+### ⚠️ Important Notes
+- The system is locked to **LIVE MODE**. All revenue numbers are real.
+- The `[TEST]` button in the dashboard is only for checking AI connectivity.
+- Real transactions will appear as `[PAYPAL REAL]` in the logs.
 
-## Troubleshooting
-- Streamlit CLI nicht gefunden → verwende `python -m streamlit run`.
-- Frontend DOM-Fehler (removeChild) → App neu starten; im Cloud‑Deployment Logs prüfen; ggf. Patch in `new_dashboard.py` (try/except um transient UI‑Updates).
-
-## Nützliche Befehle
-```bash
-# lokale Version prüfen
-python -m streamlit --version
-
-# bereinigten Repo pushen (force, nur wenn autorisiert)
-git push --force origin main
-```
-
-## Kontakt / Hinweise
-- Repo (bereinigt): https://github.com/Gazi8580/quantum-avatar-cleaned
-- Original (nicht überschreiben, history wurde gesichert): https://github.com/Gazi8580/quantum-avatar
+---
+*System verified and deployed on 2025-12-17.*
