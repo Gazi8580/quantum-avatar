@@ -1,7 +1,7 @@
 # Copilot Instructions (MEGA-ULTRA-ROBOTER-KI)
 
 ## Big Picture
-- Streamlit UI zeigt Revenue/Logs und kann PayPal-Daten auf 2 Wegen holen: **WEBHOOKS (empfohlen)** oder **POLLING**.
+- Streamlit UI zeigt Revenue/Logs und ist **WEBHOOKS-only** (kein POLLING/Reporting-API mehr im Dashboard).
 - Webhook-Ingest ist der robuste Weg (keine Reporting-API-Rechte nötig): FastAPI Server empfängt PayPal Webhooks, verifiziert Signaturen und persistiert Events.
 
 ## Wichtige Entry Points
@@ -23,8 +23,9 @@
   - `POST /paypal/webhook` (PayPal webhook)
   - `GET /stats` (MVP Aggregation für Dashboard)
   - `GET /health`
+- `GET /stats` liefert i.d.R. das Shape: `{ events, gross: {CCY: number}, estimated_net: {CCY: number} }` (Dashboard bevorzugt `estimated_net`, sonst `gross`).
 - Persistenz:
-  - Lokal JSONL: `data/paypal_events.jsonl` (override via `PAYPAL_EVENTS_PATH`)
+  - Lokal JSONL: `data/paypal_events.jsonl` (override via `PAYPAL_EVENTS_PATH`, auch über `env.ini`/`.env` möglich)
   - Optional Azure Blob (durable): `AZURE_STORAGE_CONNECTION_STRING` (+ optional `PAYPAL_EVENTS_CONTAINER`, `PAYPAL_EVENTS_PREFIX`)
   - Storage-Fehler sollen Webhook nicht abbrechen: Ingest soll trotzdem 200/ACK liefern.
 - Dashboard kann Stats remote holen: setze `PAYPAL_STATS_URL` oder `PAYPAL_INGEST_BASE_URL` (siehe `dashboard_ui.py`).
