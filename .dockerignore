@@ -1,0 +1,12 @@
+﻿__pycache__
+.venv
+.env
+env.ini
+data
+logs
+output
+backups
+*.log
+*.sqlite
+.vscode
+.idea

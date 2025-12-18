@@ -453,8 +453,7 @@ def main():
                                 st.session_state.logs.append(f"[PAYPAL WEBHOOK] Remote stats error: {e}")
 
                     if not remote_ok:
-                        events_filename = "paypal_events_sandbox.jsonl" if env_choice.startswith("SANDBOX") else "paypal_events_live.jsonl"
-                        events_path = Path("data") / events_filename
+                        events_path = Path("data") / "paypal_events.jsonl"
                         if "processed_event_ids" not in st.session_state:
                             st.session_state.processed_event_ids = set()
 

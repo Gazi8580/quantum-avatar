@@ -278,7 +278,7 @@ def main():
         st.metric("Active Modules", "5")
         
         if real_keys == 0:
-            st.error("⚠️ NO REAL KEYS DETECTED")
+            st.error("âš ï¸ NO REAL KEYS DETECTED")
         else:
             st.success(f"✅ {real_keys} KEYS ACTIVE")
             
@@ -330,7 +330,7 @@ def main():
             status_placeholder.metric(label="System Status", value="STANDBY", delta_color="normal")
 
     # Control Panel
-    st.markdown("### ⚡ OPERATION CENTER")
+    st.markdown("### âš¡ OPERATION CENTER")
     
     c1, c2 = st.columns([2, 1])
     
@@ -453,8 +453,7 @@ def main():
                                 st.session_state.logs.append(f"[PAYPAL WEBHOOK] Remote stats error: {e}")
 
                     if not remote_ok:
-                        events_filename = "paypal_events_sandbox.jsonl" if env_choice.startswith("SANDBOX") else "paypal_events_live.jsonl"
-                        events_path = Path("data") / events_filename
+                        events_path = Path("data") / "paypal_events.jsonl"
                         if "processed_event_ids" not in st.session_state:
                             st.session_state.processed_event_ids = set()
 
@@ -524,7 +523,7 @@ def main():
                     if "PLACEHOLDER" in client_id or not client_id or "PLACEHOLDER" in client_secret or not client_secret:
                         # Simulation disabled
                         if not any("Waiting for real API keys" in log for log in st.session_state.logs[-3:]):
-                            st.session_state.logs.append("[SYSTEM] ⚠️ Simulation disabled. Waiting for real API keys...")
+                            st.session_state.logs.append("[SYSTEM] âš ï¸ Simulation disabled. Waiting for real API keys...")
                     else:
                         # Real API Call
                         token = get_paypal_token(client_id, client_secret, base_url)
