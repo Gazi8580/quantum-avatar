@@ -1,6 +1,10 @@
 import streamlit as st
 import os
 from pathlib import Path
+import requests
+from products import catalog
+from cart import cart
+from orders import order_manager, ShippingAddress
 
 # Page Config
 st.set_page_config(
@@ -22,7 +26,25 @@ def load_client_id():
                 pass
     return None
 
+def load_paypal_config():
+    """Load PayPal configuration from environment"""
+    env_files = [Path('env.ini'), Path('.env')]
+    config = {}
+    for env_file in env_files:
+        if env_file.exists():
+            try:
+                with open(env_file, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith("#") and "=" in line:
+                            key, value = line.split("=", 1)
+                            config[key.strip()] = value.strip().strip('"').strip("'")
+            except:
+                pass
+    return config
+
 client_id = load_client_id()
+paypal_config = load_paypal_config()
 
 st.title("🛍️ MEGA-ULTRA-ROBOTER SHOP SYSTEM")
 
@@ -30,12 +52,41 @@ if not client_id or "PLACEHOLDER" in client_id:
     st.error("⚠️ Kein gültiger PayPal Client ID in env.ini gefunden!")
     st.stop()
 
+# Shopping Cart Sidebar
+with st.sidebar:
+    st.header("🛒 Warenkorb")
+
+    if cart.is_empty():
+        st.info("Ihr Warenkorb ist leer")
+    else:
+        cart_summary = cart.get_cart_summary()
+        st.metric("Artikel", cart_summary["total_items"])
+        st.metric("Gesamt", f"{cart_summary['total_price']:.2f} {cart_summary['currency']}")
+
+        st.subheader("Artikel:")
+        for item in cart_summary["items"]:
+            col1, col2, col3 = st.columns([2, 1, 1])
+            with col1:
+                st.text(item.product.name)
+            with col2:
+                st.text(f"{item.quantity}x")
+            with col3:
+                st.text(f"{item.total_price:.2f}€")
+
+        if st.button("🗑️ Warenkorb leeren", type="secondary"):
+            cart.clear_cart()
+            st.rerun()
+
+        if st.button("💳 Zur Kasse", type="primary"):
+            st.session_state.checkout = True
+            st.rerun()
+
 # Navigation
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "🛒 AI Produkte", 
-    "📦 Dropshipping", 
-    "🤝 Affiliate", 
-    "💼 Freelancer", 
+    "🛒 AI Produkte",
+    "📦 Dropshipping",
+    "🤝 Affiliate",
+    "💼 Freelancer",
     "📸 Screenshot Converter"
 ])
 

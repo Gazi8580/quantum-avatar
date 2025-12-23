@@ -61,9 +61,7 @@ def load_api_keys():
                         if line and not line.startswith("#") and "=" in line:
                             key, value = line.split("=", 1)
                             if key.strip() not in api_keys:
-                                clean_value = (
-                                    value.strip().strip('"').strip("'")
-                                )
+                                clean_value = value.strip().strip('"').strip("'")
                                 api_keys[key.strip()] = clean_value
             except Exception:
                 pass
@@ -109,8 +107,7 @@ def _pick_currency_total(
 
 def _resolve_stats_url(api_keys: Mapping[str, str]) -> str:
     stats_url = (
-        os.getenv("PAYPAL_STATS_URL", "")
-        or api_keys.get("PAYPAL_STATS_URL", "")
+        os.getenv("PAYPAL_STATS_URL", "") or api_keys.get("PAYPAL_STATS_URL", "")
     ).strip()
     ingest_base = (
         os.getenv("PAYPAL_INGEST_BASE_URL", "")
@@ -133,8 +130,7 @@ def _resolve_ingest_base(api_keys: Mapping[str, str]) -> str:
 
 def _resolve_events_path(api_keys: Mapping[str, str]) -> Path:
     configured = (
-        os.getenv("PAYPAL_EVENTS_PATH", "")
-        or api_keys.get("PAYPAL_EVENTS_PATH", "")
+        os.getenv("PAYPAL_EVENTS_PATH", "") or api_keys.get("PAYPAL_EVENTS_PATH", "")
     ).strip()
     if configured:
         return Path(configured)
@@ -148,9 +144,7 @@ def _compute_totals_from_jsonl(
         return None, None
 
     try:
-        lines = events_path.read_text(
-            encoding="utf-8", errors="ignore"
-        ).splitlines()
+        lines = events_path.read_text(encoding="utf-8", errors="ignore").splitlines()
     except Exception:
         return None, None
 
@@ -197,9 +191,7 @@ def _compute_totals_from_jsonl(
         (ccy, val) = next(iter(gross_totals.items()))
         picked = (val, ccy)
 
-    last_event = (
-        last_record.get("event") if isinstance(last_record, dict) else None
-    )
+    last_event = last_record.get("event") if isinstance(last_record, dict) else None
     return picked, last_event
 
 
@@ -233,9 +225,7 @@ def main():
             1
             for v in api_keys.values()
             if v
-            and not v.startswith(
-                ("PLACEHOLDER", "AZ...", "sk-ant-", "xai-", "BB-")
-            )
+            and not v.startswith(("PLACEHOLDER", "AZ...", "sk-ant-", "xai-", "BB-"))
         )
 
         st.metric("API Keys Loaded", len(api_keys))
@@ -270,9 +260,7 @@ def main():
                 resp = requests.post(create_url, json={}, timeout=12)
                 if resp.status_code == 200:
                     data = _json_dict(resp)
-                    st.session_state.last_order_id = str(
-                        data.get("order_id") or ""
-                    )
+                    st.session_state.last_order_id = str(data.get("order_id") or "")
                     st.session_state.last_approve_url = str(
                         data.get("approve_url") or ""
                     )
@@ -290,9 +278,7 @@ def main():
                         )
                     )
             except Exception as e:
-                st.session_state.logs.append(
-                    f"[PAYPAL] create-order error: {e}"
-                )
+                st.session_state.logs.append(f"[PAYPAL] create-order error: {e}")
             st.rerun()
 
         if st.session_state.last_order_id:
@@ -335,9 +321,7 @@ def main():
                             )
                         )
                 except Exception as e:
-                    st.session_state.logs.append(
-                        f"[PAYPAL] capture error: {e}"
-                    )
+                    st.session_state.logs.append(f"[PAYPAL] capture error: {e}")
             st.rerun()
 
         if st.button("🔴 STOP SYSTEM"):
@@ -347,8 +331,7 @@ def main():
     # Main Content
     st.title("🤖 MEGA-ULTRA-ROBOTER-KI")
     st.caption(
-        "🔒 Secure Local Connection "
-        "(Ignore browser warnings - running on localhost)"
+        "🔒 Secure Local Connection " "(Ignore browser warnings - running on localhost)"
     )
     st.markdown("### 🚀 PAYPAL REVENUE MAXIMIZATION SYSTEM")
     st.markdown("---")
@@ -434,10 +417,7 @@ def main():
                         resp = requests.get(stats_url, timeout=5)
                         if resp.status_code == 200:
                             stats = _json_dict(resp)
-                            raw_net = (
-                                stats.get("estimated_net")
-                                or stats.get("net")
-                            )
+                            raw_net = stats.get("estimated_net") or stats.get("net")
                             if isinstance(raw_net, dict):
                                 typed_net = cast(dict[str, Any], raw_net)
                                 net_map: dict[str, Any] = {
@@ -446,10 +426,7 @@ def main():
                             else:
                                 net_map = {}
 
-                            raw_gross = (
-                                stats.get("gross")
-                                or stats.get("gross_total")
-                            )
+                            raw_gross = stats.get("gross") or stats.get("gross_total")
                             if isinstance(raw_gross, dict):
                                 typed_gross = cast(dict[str, Any], raw_gross)
                                 gross_map: dict[str, Any] = {
@@ -473,14 +450,8 @@ def main():
                                 0.0,
                             )
                             if time.time() - last_log > 30:
-                                st.session_state.last_remote_stats_log = (
-                                    time.time()
-                                )
-                                status = (
-                                    "OK"
-                                    if remote_ok
-                                    else "missing totals"
-                                )
+                                st.session_state.last_remote_stats_log = time.time()
+                                status = "OK" if remote_ok else "missing totals"
                                 st.session_state.logs.append(
                                     (
                                         "[PAYPAL WEBHOOK] /stats "
@@ -494,9 +465,7 @@ def main():
                                 0.0,
                             )
                             if time.time() - last_log > 30:
-                                st.session_state.last_remote_stats_log = (
-                                    time.time()
-                                )
+                                st.session_state.last_remote_stats_log = time.time()
                                 code = resp.status_code
                                 st.session_state.logs.append(
                                     (
@@ -510,9 +479,7 @@ def main():
                             0.0,
                         )
                         if time.time() - last_log > 30:
-                            st.session_state.last_remote_stats_log = (
-                                time.time()
-                            )
+                            st.session_state.last_remote_stats_log = time.time()
                             st.session_state.logs.append(
                                 f"[PAYPAL WEBHOOK] /stats error: {e}"
                             )

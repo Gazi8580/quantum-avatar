@@ -68,11 +68,7 @@ def _get_key(keys: Mapping[str, str], name: str, default: str = "") -> str:
 
 
 def _detect_env(keys: Mapping[str, str]) -> str:
-    env = (
-        _get_key(keys, "PAYPAL_ENV")
-        or _get_key(keys, "ENV")
-        or "LIVE"
-    ).upper()
+    env = (_get_key(keys, "PAYPAL_ENV") or _get_key(keys, "ENV") or "LIVE").upper()
     if env not in {"LIVE", "SANDBOX"}:
         env = "LIVE"
     return env
@@ -87,9 +83,8 @@ def get_paypal_config() -> PayPalConfig:
         client_id = _get_key(keys, "PAYPAL_SANDBOX_CLIENT_ID") or _get_key(
             keys, "PAYPAL_CLIENT_ID"
         )
-        client_secret = (
-            _get_key(keys, "PAYPAL_SANDBOX_CLIENT_SECRET")
-            or _get_key(keys, "PAYPAL_CLIENT_SECRET")
+        client_secret = _get_key(keys, "PAYPAL_SANDBOX_CLIENT_SECRET") or _get_key(
+            keys, "PAYPAL_CLIENT_SECRET"
         )
         webhook_id = _get_key(keys, "PAYPAL_SANDBOX_WEBHOOK_ID") or _get_key(
             keys, "PAYPAL_WEBHOOK_ID"
@@ -125,9 +120,8 @@ def get_paypal_auth_config() -> PayPalAuthConfig:
         client_id = _get_key(keys, "PAYPAL_SANDBOX_CLIENT_ID") or _get_key(
             keys, "PAYPAL_CLIENT_ID"
         )
-        client_secret = (
-            _get_key(keys, "PAYPAL_SANDBOX_CLIENT_SECRET")
-            or _get_key(keys, "PAYPAL_CLIENT_SECRET")
+        client_secret = _get_key(keys, "PAYPAL_SANDBOX_CLIENT_SECRET") or _get_key(
+            keys, "PAYPAL_CLIENT_SECRET"
         )
     else:
         base_url = "https://api-m.paypal.com"
@@ -157,16 +151,13 @@ def get_access_token(cfg: PayPalAuthConfig | PayPalConfig) -> str:
     )
     if resp.status_code != 200:
         raise RuntimeError(
-            "PayPal auth failed: "
-            f"{resp.status_code} {resp.text[:500]}"
+            "PayPal auth failed: " f"{resp.status_code} {resp.text[:500]}"
         )
 
     data = _json_obj(resp)
     token = data.get("access_token")
     if not isinstance(token, str) or not token.strip():
-        raise RuntimeError(
-            "PayPal auth succeeded but no access_token returned"
-        )
+        raise RuntimeError("PayPal auth succeeded but no access_token returned")
     return token
 
 
@@ -309,9 +300,7 @@ def _store_blob_event(event_id: str, record: dict[str, Any]) -> None:
         blob_client.upload_blob(data, overwrite=False)
     except Exception as e:
         # Idempotency: event already stored
-        if ResourceExistsError is not None and isinstance(
-            e, ResourceExistsError
-        ):
+        if ResourceExistsError is not None and isinstance(e, ResourceExistsError):
             return
         # Fallback: ignore any other storage failure (webhook should still ACK)
         return
@@ -378,9 +367,7 @@ def estimate_paypal_fee(
 
 def persist_event(payload: dict[str, Any]) -> dict[str, Any]:
     record: dict[str, Any] = {
-        "received_at": datetime.now(tz=timezone.utc)
-        .isoformat()
-        .replace("+00:00", "Z"),
+        "received_at": datetime.now(tz=timezone.utc).isoformat().replace("+00:00", "Z"),
         "event": payload,
     }
 
@@ -471,8 +458,7 @@ def create_paypal_order(
         raise HTTPException(
             status_code=502,
             detail=(
-                "PayPal create order failed: "
-                f"{resp.status_code} {resp.text[:500]}"
+                "PayPal create order failed: " f"{resp.status_code} {resp.text[:500]}"
             ),
         )
 
@@ -510,19 +496,14 @@ def capture_paypal_order(
     if resp.status_code not in (200, 201):
         raise HTTPException(
             status_code=502,
-            detail=(
-                "PayPal capture failed: "
-                f"{resp.status_code} {resp.text[:500]}"
-            ),
+            detail=("PayPal capture failed: " f"{resp.status_code} {resp.text[:500]}"),
         )
     data = _json_obj(resp)
     status = data.get("status")
 
     # Optional: for localhost testing (PayPal can't reach your local webhook),
     # persist successful captures as events so /stats reflects real payments.
-    persist_capture = (
-        os.getenv("PERSIST_CAPTURE_AS_EVENT") or ""
-    ).strip().lower() in {
+    persist_capture = (os.getenv("PERSIST_CAPTURE_AS_EVENT") or "").strip().lower() in {
         "1",
         "true",
         "yes",
@@ -681,9 +662,7 @@ def stats(limit: int = 0) -> dict[str, Any]:
                                 _fee, derived_net = est
                             else:
                                 derived_net = amount_f
-                            net[str(ccy)] = net.get(str(ccy), 0.0) + float(
-                                derived_net
-                            )
+                            net[str(ccy)] = net.get(str(ccy), 0.0) + float(derived_net)
 
     except Exception:
         pass
@@ -709,12 +688,8 @@ async def paypal_webhook(
     paypal_transmission_sig: str | None = Header(
         default=None, alias="PayPal-Transmission-Sig"
     ),
-    paypal_cert_url: str | None = Header(
-        default=None, alias="PayPal-Cert-Url"
-    ),
-    paypal_auth_algo: str | None = Header(
-        default=None, alias="PayPal-Auth-Algo"
-    ),
+    paypal_cert_url: str | None = Header(default=None, alias="PayPal-Cert-Url"),
+    paypal_auth_algo: str | None = Header(default=None, alias="PayPal-Auth-Algo"),
 ):
     try:
         payload_any = await request.json()

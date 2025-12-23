@@ -1,5 +1,11 @@
 {
     "recommendations": [
-        "github.vscode-github-actions"
+        "github.vscode-github-actions",
+        "ms-vscode-remote.remote-containers",
+        "firefox-devtools.vscode-firefox-debug",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ms-azuretools.vscode-azure-mcp-server",
+        "golang.go",
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
     ]
 }

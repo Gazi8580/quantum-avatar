@@ -48,8 +48,7 @@ def main() -> int:
         or os.getenv("WEBHOOK_URL")
         or "http://127.0.0.1:8503/paypal/webhook",
         help=(
-            "Webhook endpoint URL "
-            "(default: http://127.0.0.1:8503/paypal/webhook)"
+            "Webhook endpoint URL " "(default: http://127.0.0.1:8503/paypal/webhook)"
         ),
     )
     parser.add_argument(
