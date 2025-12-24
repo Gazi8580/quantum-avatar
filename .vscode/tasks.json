@@ -104,6 +104,87 @@
         }
       },
       "problemMatcher": []
+    },
+    {
+      "label": "MEGA: GitHub Credentials primen (cashmoneycolors)",
+      "type": "shell",
+      "command": "git",
+      "args": [
+        "ls-remote",
+        "https://github.com/cashmoneycolors/-MEGA-ULTRA-ROBOTER-KI.git",
+        "HEAD"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "MEGA: Fetch PR #7 (remote mega -> pr-7)",
+      "type": "shell",
+      "command": "git",
+      "args": [
+        "-c",
+        "credential.interactive=never",
+        "fetch",
+        "mega",
+        "refs/pull/7/head:pr-7",
+        "--force"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "MEGA: Fetch PR #7 (PAT env via askpass, no prompt)",
+      "type": "shell",
+      "command": "git",
+      "args": [
+        "fetch",
+        "mega",
+        "refs/pull/7/head:pr-7",
+        "--force"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "GIT_TERMINAL_PROMPT": "0",
+          "GCM_INTERACTIVE": "Never",
+          "GIT_ASKPASS": "${workspaceFolder}\\scripts\\git_askpass.cmd"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "MEGA: Git Credential Helper fixieren (manager-core)",
+      "type": "shell",
+      "command": "git",
+      "args": [
+        "config",
+        "--local",
+        "credential.helper",
+        "manager-core"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "MEGA: Git Credential useHttpPath aktivieren",
+      "type": "shell",
+      "command": "git",
+      "args": [
+        "config",
+        "--local",
+        "credential.useHttpPath",
+        "true"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
     }
   ]
 }
