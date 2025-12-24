@@ -1,60 +1,52 @@
 # 🤖 MEGA-ULTRA-ROBOTER-KI
 
-## 🚀 PayPal Revenue Maximization System
+## 🚀 PayPal Revenue via Webhooks
 
-**STATUS: LIVE (PRODUCTION)** 🟢
-
-This system is a fully autonomous revenue maximization bot connected to the PayPal Live API. It monitors transactions in real-time and uses AI (Claude/Grok/Local Core) to analyze sales and suggest upsells.
+Kernpfad: **PayPal Webhook → JSONL (`data/paypal_events.jsonl`) → `/stats` → Streamlit Dashboard**.
 
 ### ✅ Features
 
-- **Real-Time Monitoring:** Checks PayPal for new transactions every 10 seconds.
-- **AI Analysis:** Uses Claude 3 Opus or Grok Beta to analyze buyer behavior.
-- **Local Core Fallback:** Continues to work even if AI credits run out.
-- **Secure:** API keys are stored locally in `env.ini` and never uploaded to Git.
+- Webhook-Receiver (FastAPI): `POST /paypal/webhook`, `GET /stats`, `GET /health`
+- Streamlit Dashboard (8502) liest Umsatz aus `/stats` (remote) oder lokalem JSONL-Fallback
+- Optionale PayPal Checkout Demo: `POST /paypal/create-order`, `POST /paypal/capture-order`
 
-### 🛠️ How to Start
+### 🛠️ Lokales Starten
 
-1. Double-click **`START_ROBOTER.bat`** on your Desktop.
-2. Keep the black window open.
-3. The Dashboard will open automatically in your browser (`http://localhost:8502`).
+Empfohlen (VS Code Tasks):
 
-### 🔑 Configuration
+- Webhook Server: Task "MEGA: Run Webhook Server (8503)"
+- Dashboard: Task "MEGA: Run Streamlit Dashboard (8502)"
 
-- **PayPal Keys:** Managed in `env.ini` (Live Mode).
-- **AI Keys:** Managed in `env.ini` (Claude/Grok).
+Alternativ manuell:
 
-> Tipp: Nutze `.env.example` als Vorlage und halte echte Secrets nur lokal in `env.ini` oder als Environment/Deployment-Secrets (niemals committen).
+1. Webhook Server: `python webhook_server.py` (Port via `WEBHOOK_PORT`/`PORT`, default 8503)
+2. Dashboard: `python -m streamlit run dashboard_ui.py --server.port 8502`
 
-### ⚠️ Important Notes
+### 🔑 Konfiguration (niemals Secrets committen)
 
-### 🛠️ Why revenue can stay at €0.00
+Nutze `.env.example` als Vorlage und halte echte Secrets nur lokal in `env.ini`/`.env` oder als Deployment-Secrets.
 
-If PayPal auth works but transactions never show up, the PayPal Reporting API (`/v1/reporting/transactions`) can return **403 NOT_AUTHORIZED** due to **insufficient permissions**.
+Für echte Webhook-Verifikation (LIVE oder SANDBOX):
 
-### 🔔 Recommended: Webhooks ingestion (works without Reporting permissions)
-
-This repo includes a local webhook ingest server that writes incoming PayPal events to `data/paypal_events.jsonl`, and the Streamlit dashboard can display revenue from those events.
-
-1) Start the webhook server
-
-- Run `RUN_WEBHOOK_SERVER.bat` (local: `http://127.0.0.1:8503/health`)
-
-> Hinweis: Der Endpoint `/paypal/webhook` ist standardmäßig LIVE-strikt (erfordert echte PayPal-Signatur-Header). Unsigned lokale Tests sind nur DEV-only via `ALLOW_UNVERIFIED_WEBHOOKS=true`.
-
-1) Configure PayPal Webhook
-
-- Webhook URL: `https://<your-public-url>/paypal/webhook`
-- Add event types like `PAYMENT.CAPTURE.COMPLETED`
-
-1) Add env keys (never commit secrets)
-
+- `PAYPAL_CLIENT_ID`
+- `PAYPAL_CLIENT_SECRET`
 - `PAYPAL_WEBHOOK_ID`
-- `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET`
-- Optional Sandbox keys: `PAYPAL_ENV=SANDBOX`, `PAYPAL_SANDBOX_CLIENT_ID`, `PAYPAL_SANDBOX_CLIENT_SECRET`, `PAYPAL_SANDBOX_WEBHOOK_ID`
 
-1) In the Streamlit sidebar
+### ⚠️ Hinweise
 
-- Set "PAYPAL MODE" to `WEBHOOKS (Recommended)`.
+#### Warum Umsatz bei €0.00 bleiben kann
+
+Wenn PayPal Auth klappt, aber Transaktionen nie auftauchen: Die PayPal Reporting API kann **403 NOT_AUTHORIZED** liefern (Permissions). Dieses Repo setzt daher primär auf **Webhook-Ingestion** statt Polling.
+
+#### Webhooks (empfohlen)
+
+1. Webhook Server starten
+	- `RUN_WEBHOOK_SERVER.bat` (Health: `http://127.0.0.1:8503/health`)
+	- Hinweis: `POST /paypal/webhook` ist standardmäßig **LIVE-strikt** (erwartet echte PayPal-Signatur-Header). Unsigned lokale Tests sind DEV-only via `ALLOW_UNVERIFIED_WEBHOOKS=true`.
+2. PayPal Webhook konfigurieren
+	- Webhook URL: `https://<your-public-url>/paypal/webhook`
+	- Event Types z.B. `PAYMENT.CAPTURE.COMPLETED`
+3. Dashboard an `/stats` hängen
+	- In `env.ini`: `PAYPAL_INGEST_BASE_URL=https://<your-public-url>` oder `PAYPAL_STATS_URL=https://<your-public-url>/stats`
 
 *System verified and deployed on 2025-12-17.*
